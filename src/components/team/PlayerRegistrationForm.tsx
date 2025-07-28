@@ -193,200 +193,242 @@ export function PlayerRegistrationForm({ player, teams, onSuccess, onCancel }: P
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="full_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre completo *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ej: María Pérez" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <div className="space-y-6">
+          {/* Información Básica */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground">Información Básica</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="full_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre completo *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: María Pérez" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="document_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Documento *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Cédula o pasaporte" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="document_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Documento *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Cédula o pasaporte" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="birthdate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Fecha de Nacimiento *</FormLabel>
-                <FormControl>
-                  <Input
-                    type="date"
-                    value={field.value ? format(field.value, 'yyyy-MM-dd') : ''}
-                    onChange={e => {
-                      // Validar manualmente el input
-                      const val = e.target.value;
-                      // Solo permitir yyyy-MM-dd
-                      if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
-                        const year = val.substring(0, 4);
-                        if (year.length === 4) {
-                          const date = new Date(val + 'T00:00:00');
-                          field.onChange(date);
-                          return;
-                        }
-                      }
-                      // Si no es válido, pasar string para que zod lo rechace
-                      field.onChange(val);
-                    }}
-                    placeholder="Selecciona o escribe la fecha"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="position"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Posición *</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona posición" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {positions.map((position) => (
-                      <SelectItem key={position} value={position}>
-                        {position}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="jersey_number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Número de Camiseta *</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    min="1" 
-                    max="99"
-                    placeholder="Ej: 10"
-                    {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="team_ids"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Equipos *</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        "w-full justify-between",
-                        !field.value || field.value.length === 0 ? "text-muted-foreground" : ""
-                      )}
-                    >
-                      {field.value && field.value.length > 0
-                        ? teams.filter(t => field.value.includes(t.id)).map(t => t.name).join(", ")
-                        : "Selecciona uno o varios equipos"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[300px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Buscar equipo..." />
-                      <CommandList>
-                        <CommandEmpty>No se encontraron equipos.</CommandEmpty>
-                        {teams.map((team) => (
-                          <CommandItem key={team.id} value={team.id} onSelect={() => {
-                            const exists = field.value.includes(team.id);
-                            if (exists) {
-                              field.onChange(field.value.filter((id: string) => id !== team.id));
-                            } else {
-                              field.onChange([...field.value, team.id]);
+              <FormField
+                control={form.control}
+                name="birthdate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fecha de Nacimiento *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="date"
+                        value={field.value ? format(field.value, 'yyyy-MM-dd') : ''}
+                        onChange={e => {
+                          // Validar manualmente el input
+                          const val = e.target.value;
+                          // Solo permitir yyyy-MM-dd
+                          if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+                            const year = val.substring(0, 4);
+                            if (year.length === 4) {
+                              const date = new Date(val + 'T00:00:00');
+                              field.onChange(date);
+                              return;
                             }
-                          }}>
-                            <Checkbox
-                              checked={field.value.includes(team.id)}
-                              className="mr-2"
-                              tabIndex={-1}
-                              aria-hidden="true"
-                            />
-                            {team.name} ({team.category})
-                          </CommandItem>
+                          }
+                          // Si no es válido, pasar string para que zod lo rechace
+                          field.onChange(val);
+                        }}
+                        placeholder="Selecciona o escribe la fecha"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="position"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Posición *</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona posición" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {positions.map((position) => (
+                          <SelectItem key={position} value={position}>
+                            {position}
+                          </SelectItem>
                         ))}
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="guardian_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre de Padre/Madre/Tutor *</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Ej: Juan Pérez"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="jersey_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número de Camiseta *</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        min="1" 
+                        max="99"
+                        placeholder="Ej: 10"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
 
-          <FormField
-            control={form.control}
-            name="guardian_contact"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contacto de Padre/Madre/Tutor</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Ej: +593987654321"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Asignación de Equipos */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground">Asignación de Equipos</h3>
+            <FormField
+              control={form.control}
+              name="team_ids"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Equipos *</FormLabel>
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      Selecciona uno o varios equipos para esta jugadora
+                    </p>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full justify-between",
+                            !field.value || field.value.length === 0 ? "text-muted-foreground" : ""
+                          )}
+                        >
+                          {field.value && field.value.length > 0
+                            ? `${field.value.length} equipo(s) seleccionado(s)`
+                            : "Selecciona equipos"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput placeholder="Buscar equipo..." />
+                          <CommandList>
+                            <CommandEmpty>No se encontraron equipos.</CommandEmpty>
+                            {teams.map((team) => (
+                              <CommandItem key={team.id} value={team.id} onSelect={() => {
+                                const exists = field.value.includes(team.id);
+                                if (exists) {
+                                  field.onChange(field.value.filter((id: string) => id !== team.id));
+                                } else {
+                                  field.onChange([...field.value, team.id]);
+                                }
+                              }}>
+                                <Checkbox
+                                  checked={field.value.includes(team.id)}
+                                  className="mr-2"
+                                  tabIndex={-1}
+                                  aria-hidden="true"
+                                />
+                                {team.name} ({team.category})
+                              </CommandItem>
+                            ))}
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    {field.value && field.value.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {teams.filter(t => field.value.includes(t.id)).map((team) => (
+                          <div
+                            key={team.id}
+                            className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-md text-sm"
+                          >
+                            {team.name}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                field.onChange(field.value.filter((id: string) => id !== team.id));
+                              }}
+                              className="ml-1 hover:bg-primary/20 rounded-full p-0.5"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Información del Tutor */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground">Información del Tutor</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="guardian_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre de Padre/Madre/Tutor *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ej: Juan Pérez"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="guardian_contact"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contacto de Padre/Madre/Tutor</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Ej: +593987654321"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 pt-4">
