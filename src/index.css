@@ -1,0 +1,265 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* VoleiPro Design System - Volleyball Club Management Platform
+All colors MUST be HSL for consistent theming.
+Inspired by professional sports management platforms with volleyball branding.
+*/
+
+@layer base {
+  :root {
+    /* Core Background & Surface Colors */
+    --background: 210 20% 98%;
+    --foreground: 210 10% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 10% 10%;
+
+    /* Volleyball Brand Colors - Primary Blue */
+    --primary: 210 100% 45%;
+    --primary-light: 210 100% 60%;
+    --primary-dark: 210 100% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Volleyball Accent - Orange */
+    --accent-orange: 25 95% 55%;
+    --accent-orange-light: 25 95% 70%;
+    --accent-orange-dark: 25 95% 45%;
+
+    /* Secondary Colors */
+    --secondary: 210 15% 96%;
+    --secondary-foreground: 210 10% 20%;
+
+    /* Muted & Neutral */
+    --muted: 210 15% 95%;
+    --muted-foreground: 210 10% 45%;
+
+    /* Accent (Using secondary for UI elements) */
+    --accent: 210 15% 94%;
+    --accent-foreground: 210 10% 20%;
+
+    /* Status Colors */
+    --success: 140 60% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 45 90% 55%;
+    --warning-foreground: 210 10% 10%;
+    
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Interactive Elements */
+    --border: 210 20% 88%;
+    --input: 210 20% 95%;
+    --ring: 210 100% 45%;
+
+    /* UI Properties */
+    --radius: 0.75rem;
+
+    /* Custom Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent-orange)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--secondary)));
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px hsl(var(--primary) / 0.08);
+    --shadow-md: 0 8px 24px hsl(var(--primary) / 0.12);
+    --shadow-lg: 0 16px 48px hsl(var(--primary) / 0.16);
+    --shadow-glow: 0 0 32px hsl(var(--primary) / 0.2);
+
+    /* Animation Timing */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark Mode - Sports Management Theme */
+    --background: 210 15% 8%;
+    --foreground: 210 10% 95%;
+
+    --card: 210 15% 10%;
+    --card-foreground: 210 10% 95%;
+
+    --popover: 210 15% 10%;
+    --popover-foreground: 210 10% 95%;
+
+    /* Primary remains consistent for brand recognition */
+    --primary: 210 100% 55%;
+    --primary-light: 210 100% 70%;
+    --primary-dark: 210 100% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Orange accent adjusted for dark mode */
+    --accent-orange: 25 85% 60%;
+    --accent-orange-light: 25 85% 75%;
+    --accent-orange-dark: 25 85% 50%;
+
+    /* Dark mode secondary */
+    --secondary: 210 15% 15%;
+    --secondary-foreground: 210 10% 85%;
+
+    /* Dark mode muted */
+    --muted: 210 15% 12%;
+    --muted-foreground: 210 10% 65%;
+
+    /* Dark mode accent */
+    --accent: 210 15% 18%;
+    --accent-foreground: 210 10% 90%;
+
+    /* Dark mode status colors */
+    --success: 140 50% 50%;
+    --warning: 45 80% 60%;
+    --destructive: 0 65% 60%;
+
+    /* Dark mode interactive */
+    --border: 210 15% 20%;
+    --input: 210 15% 15%;
+    --ring: 210 100% 55%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent-orange)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--secondary)));
+
+    /* Dark mode shadows */
+    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 8px 24px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 16px 48px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 32px hsl(var(--primary) / 0.3);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    min-height: 100vh;
+  }
+
+  /* Volleyball-specific animations */
+  @keyframes volleyball-bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-8px);
+    }
+    60% {
+      transform: translateY(-4px);
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-volleyball-bounce {
+    animation: volleyball-bounce 1.5s ease-in-out infinite;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.4s ease-out;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground;
+  }
+
+  /* Focus styles for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  /* Asegurar que los modales estén siempre por encima */
+  [data-radix-dialog-content] {
+    z-index: 99999 !important;
+  }
+
+  /* Forzar que el overlay del modal esté por encima del mapa */
+  [data-radix-dialog-overlay] {
+    z-index: 99998 !important;
+  }
+
+  /* Asegurar que el mapa no interfiera con los modales */
+  .leaflet-container {
+    z-index: 1 !important;
+  }
+
+  .leaflet-pane {
+    z-index: 1 !important;
+  }
+
+  .leaflet-control {
+    z-index: 2 !important;
+  }
+}
