@@ -111,7 +111,7 @@ export function PlayerRegistrationForm({ player, teams, onSuccess, onCancel }: P
   useEffect(() => {
     const fetchPlayerTeams = async () => {
       if (player) {
-        const { data: playerTeams } = await supabase
+        const { data: playerTeams } = await (supabase as any)
           .from('player_teams')
           .select('team_id')
           .eq('player_id', player.id);
@@ -150,7 +150,7 @@ export function PlayerRegistrationForm({ player, teams, onSuccess, onCancel }: P
         // Create new player
         const { data: newPlayer, error } = await supabase
           .from('players')
-          .insert(playerData)
+          .insert(playerData as any)
           .select('id')
           .single();
         if (error) throw error;
@@ -162,7 +162,7 @@ export function PlayerRegistrationForm({ player, teams, onSuccess, onCancel }: P
       if (playerId) {
         const toRemove = initialTeamIds.filter((id) => !data.team_ids.includes(id));
         if (toRemove.length > 0) {
-          await supabase
+          await (supabase as any)
             .from('player_teams')
             .delete()
             .in('team_id', toRemove)
@@ -172,7 +172,7 @@ export function PlayerRegistrationForm({ player, teams, onSuccess, onCancel }: P
         const toAdd = data.team_ids.filter((id) => !initialTeamIds.includes(id));
         if (toAdd.length > 0) {
           const inserts = toAdd.map((team_id) => ({ player_id: playerId, team_id }));
-          await supabase.from('player_teams').insert(inserts);
+          await (supabase as any).from('player_teams').insert(inserts);
         }
       }
 

@@ -127,7 +127,21 @@ export default function CoachRegisterForm({ onBack }: { onBack?: () => void }) {
           .from("coach_main_requests")
           .insert([{ user_id, club_id: club.id, status: "pending" }]);
         if (requestError) throw requestError;
-        // (Opcional) Insertar en club_representatives
+        // 5. Crear el registro del representante del club
+        const { error: representativeError } = await supabase
+          .from("club_representatives")
+          .insert([{
+            club_id: club.id,
+            user_id: user_id,
+            full_name: fullName,
+            national_id: '', // Se completará luego en la sección Mi Club
+            personal_email: email,
+            phone: '', // Se completará luego
+            role_in_club: 'Entrenador Principal',
+            terms_accepted: false, // Se aceptará luego
+            info_confirmed: false // Se confirmará luego
+          }]);
+        if (representativeError) throw representativeError;
       } else if (registerType === "unirse") {
         // 2. Validar código de club
         const { data: club, error: clubError } = await supabase

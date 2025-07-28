@@ -116,16 +116,16 @@ export function MatchesBulletinBoard() {
 
     setIsSubmittingInterest(true);
     try {
-      const { error } = await supabase
-        .from("match_interests")
-        .insert([
-          {
-            match_id: selectedMatch.id,
-            coach_id: profile?.user_id,
-            message: interestForm.message,
-            contact_info: interestForm.contact_info,
-          },
-        ]);
+    const { error } = await (supabase as any)
+      .from("match_interests")
+      .insert([
+        {
+          match_id: selectedMatch.id,
+          coach_id: profile?.user_id,
+          message: interestForm.message,
+          contact_info: interestForm.contact_info,
+        },
+      ]);
 
       if (error) throw error;
 

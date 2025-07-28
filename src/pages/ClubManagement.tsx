@@ -192,42 +192,91 @@ export default function ClubManagement() {
     const loadClubData = async () => {
       if (!user) return;
       try {
-        // Check if user has a club representative record
-        const { data: repData } = await (supabase as any)
-          .from('club_representatives')
-          .select(`*, clubs (*)`)
+        // First check if user has a club via coach_main_requests (approved)
+        const { data: coachRequest } = await (supabase as any)
+          .from('coach_main_requests')
+          .select('club_id, clubs(*)')
           .eq('user_id', user.id)
+          .eq('status', 'approved')
           .single();
-        if (repData && repData.clubs) {
-          let clubObj = repData.clubs;
-          if (Array.isArray(clubObj)) {
-            clubObj = clubObj[0] || {};
+
+        if (coachRequest && coachRequest.clubs) {
+          const clubData = coachRequest.clubs;
+          setClub(clubData);
+          
+          // Check if representative record exists
+          const { data: repData } = await (supabase as any)
+            .from('club_representatives')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('club_id', clubData.id)
+            .single();
+
+          if (repData) {
+            setRepresentative(repData);
           }
-          if (clubObj && typeof clubObj === 'object' && !Array.isArray(clubObj)) {
-            setRepresentative(repData as any);
-            setClub(clubObj as any);
+
           // Populate form with existing data
           reset({
-              name: clubObj.name || '',
-              city: clubObj.city || '',
-              province: clubObj.province || '',
-              country: clubObj.country || '',
-              foundation_date: clubObj.foundation_date || '',
-              email: clubObj.email || '',
-              phone: clubObj.phone || '',
-              address: clubObj.address || '',
-              website: clubObj.website || '',
-              facebook: clubObj.facebook || '',
-              instagram: clubObj.instagram || '',
-              twitter: clubObj.twitter || '',
-              rep_full_name: repData.full_name || '',
-              rep_national_id: repData.national_id || '',
-              rep_personal_email: repData.personal_email || '',
-              rep_phone: repData.phone || '',
-              rep_role_in_club: repData.role_in_club || '',
-              terms_accepted: repData.terms_accepted || false,
-              info_confirmed: repData.info_confirmed || false,
+            name: clubData.name || '',
+            city: clubData.city || '',
+            province: clubData.province || '',
+            country: clubData.country || '',
+            foundation_date: clubData.foundation_date || '',
+            email: clubData.email || '',
+            phone: clubData.phone || '',
+            address: clubData.address || '',
+            website: clubData.website || '',
+            facebook: clubData.facebook || '',
+            instagram: clubData.instagram || '',
+            twitter: clubData.twitter || '',
+            rep_full_name: repData?.full_name || '',
+            rep_national_id: repData?.national_id || '',
+            rep_personal_email: repData?.personal_email || user.email || '',
+            rep_phone: repData?.phone || '',
+            rep_role_in_club: repData?.role_in_club || 'Entrenador Principal',
+            terms_accepted: repData?.terms_accepted || false,
+            info_confirmed: repData?.info_confirmed || false,
           });
+        } else {
+          // Fallback: Check if user has a club representative record
+          const { data: repData } = await (supabase as any)
+            .from('club_representatives')
+            .select(`*, clubs (*)`)
+            .eq('user_id', user.id)
+            .single();
+            
+          if (repData && repData.clubs) {
+            let clubObj = repData.clubs;
+            if (Array.isArray(clubObj)) {
+              clubObj = clubObj[0] || {};
+            }
+            if (clubObj && typeof clubObj === 'object' && !Array.isArray(clubObj)) {
+              setRepresentative(repData as any);
+              setClub(clubObj as any);
+              // Populate form with existing data
+              reset({
+                name: clubObj.name || '',
+                city: clubObj.city || '',
+                province: clubObj.province || '',
+                country: clubObj.country || '',
+                foundation_date: clubObj.foundation_date || '',
+                email: clubObj.email || '',
+                phone: clubObj.phone || '',
+                address: clubObj.address || '',
+                website: clubObj.website || '',
+                facebook: clubObj.facebook || '',
+                instagram: clubObj.instagram || '',
+                twitter: clubObj.twitter || '',
+                rep_full_name: repData.full_name || '',
+                rep_national_id: repData.national_id || '',
+                rep_personal_email: repData.personal_email || '',
+                rep_phone: repData.phone || '',
+                rep_role_in_club: repData.role_in_club || '',
+                terms_accepted: repData.terms_accepted || false,
+                info_confirmed: repData.info_confirmed || false,
+              });
+            }
           }
         }
       } catch (error) {

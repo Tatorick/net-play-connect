@@ -92,24 +92,18 @@ export function PlayerStats() {
         .from('players')
         .select(`
           *,
-          player_teams(
-            team:teams(
-              id,
-              name,
-              category
-            )
-          )
+          teams!inner(name, coach_id)
         `)
         .eq('team_id', teamId)
         .order('full_name');
 
       if (error) throw error;
       
-      // Transformar los datos
+      // Transformar los datos  
       const transformedPlayers = (data || []).map(player => ({
         ...player,
-        teams: player.player_teams?.map((pt: any) => pt.team).filter(Boolean) || []
-      })) as Player[];
+        teams: player.teams ? [{ name: player.teams.name }] : []
+      })) as unknown as Player[];
 
       setPlayers(transformedPlayers);
     } catch (error) {

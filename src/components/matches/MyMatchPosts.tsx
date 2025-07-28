@@ -90,7 +90,7 @@ export function MyMatchPosts() {
     try {
       const { error } = await supabase
         .from("friendly_matches")
-        .update({ status: newStatus })
+        .update({ status: newStatus } as any)
         .eq("id", matchId);
 
       if (error) throw error;

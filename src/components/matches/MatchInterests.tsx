@@ -42,15 +42,15 @@ export function MatchInterests() {
 
   const fetchInterests = async () => {
     try {
-      const { data, error } = await supabase
-        .from("match_interests")
-        .select(`
-          *,
-          profiles(full_name),
-          teams(name),
-          clubs(name),
-          friendly_matches(category, publication_type, location, match_format)
-        `)
+    const { data, error } = await (supabase as any)
+      .from("match_interests")
+      .select(`
+        *,
+        profiles(full_name),
+        teams(name),
+        clubs(name),
+        friendly_matches(category, publication_type, location, match_format)
+      `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -64,10 +64,10 @@ export function MatchInterests() {
 
   const handleResponseToInterest = async (interestId: string, newStatus: string) => {
     try {
-      const { error } = await supabase
-        .from("match_interests")
-        .update({ status: newStatus })
-        .eq("id", interestId);
+    const { error } = await (supabase as any)
+      .from("match_interests")
+      .update({ status: newStatus })
+      .eq("id", interestId);
 
       if (error) throw error;
 
