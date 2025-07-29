@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CoachRegisterForm from "../components/CoachRegisterForm";
+import CoachTeamRegisterForm from "../components/CoachTeamRegisterForm";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -23,6 +24,7 @@ const interFont = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;5
 
 export default function Register() {
   const [showCoachModal, setShowCoachModal] = useState(false);
+  const [showCoachTeamModal, setShowCoachTeamModal] = useState(false);
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', minHeight: '100vh' }}>
@@ -135,7 +137,7 @@ export default function Register() {
 
                   {/* Opciones de registro */}
                   <div className="space-y-4">
-                    {/* Entrenador - Activo */}
+                    {/* Entrenador Principal - Activo */}
                     <button
                       onClick={() => setShowCoachModal(true)}
                       className="group relative w-full p-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-2xl text-left transition-all duration-300 hover:scale-105 shadow-2xl border border-white/20"
@@ -146,8 +148,27 @@ export default function Register() {
                             <Users className="w-6 h-6 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-white">Entrenador</h3>
-                            <p className="text-blue-100 text-sm">Gestión completa de equipos y jugadores</p>
+                            <h3 className="text-lg font-bold text-white">Entrenador Principal</h3>
+                            <p className="text-blue-100 text-sm">Crear club y gestión completa</p>
+                          </div>
+                        </div>
+                        <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </button>
+
+                    {/* Entrenador Secundario - Activo */}
+                    <button
+                      onClick={() => setShowCoachTeamModal(true)}
+                      className="group relative w-full p-6 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 rounded-2xl text-left transition-all duration-300 hover:scale-105 shadow-2xl border border-white/20"
+                    >
+                      <div className="flex items-center justify-between relative z-10">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <UserPlus className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-white">Entrenador Secundario</h3>
+                            <p className="text-green-100 text-sm">Unirse a club existente con código</p>
                           </div>
                         </div>
                         <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
@@ -224,19 +245,35 @@ export default function Register() {
         </div>
       </div>
 
-      {/* Modal de registro de entrenador */}
+      {/* Modal de registro de entrenador principal */}
       <Dialog open={showCoachModal} onOpenChange={setShowCoachModal}>
         <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserPlus className="w-5 h-5" />
-              Registro de Entrenador
+              Registro de Entrenador Principal
             </DialogTitle>
             <DialogDescription>
-              Completa el formulario para crear o unirte a un club en VoleiPro.
+              Completa el formulario para crear un nuevo club en VoleiPro.
             </DialogDescription>
           </DialogHeader>
           <CoachRegisterForm onBack={() => setShowCoachModal(false)} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de registro de entrenador secundario */}
+      <Dialog open={showCoachTeamModal} onOpenChange={setShowCoachTeamModal}>
+        <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5" />
+              Registro de Entrenador Secundario
+            </DialogTitle>
+            <DialogDescription>
+              Completa el formulario para unirte a un club existente.
+            </DialogDescription>
+          </DialogHeader>
+          <CoachTeamRegisterForm onBack={() => setShowCoachTeamModal(false)} />
         </DialogContent>
       </Dialog>
     </div>

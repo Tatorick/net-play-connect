@@ -60,6 +60,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       console.log('Perfil cargado:', data);
+      
+      // Para coach_main, verificar también el estado de las solicitudes
+      if (data.role === 'coach_main') {
+        const { data: requestData } = await supabase
+          .from('coach_main_requests')
+          .select('status')
+          .eq('user_id', userId)
+          .single();
+        
+        if (requestData) {
+          (data as any).requestStatus = requestData.status;
+        }
+      }
+
+      // Para coach_team, verificar el estado de asignación
+      if (data.role === 'coach_team') {
+        const { data: assignmentData } = await supabase
+          .from('club_coach_assignments')
+          .select('status')
+          .eq('coach_user_id', userId)
+          .single();
+        
+        if (assignmentData) {
+          (data as any).assignmentStatus = assignmentData.status;
+        }
+      }
+
       setProfile(data);
     } catch (error: any) {
       console.error('Error fetching profile:', error);
@@ -121,11 +148,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Polling para refrescar estado cuando el usuario está pendiente
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
-    if (profile && profile.status === 'pending' && user) {
-      interval = setInterval(() => {
-        console.log('Refrescando perfil...');
-        fetchProfile(user.id);
-      }, 5000); // cada 5 segundos
+    if (profile && user) {
+      const shouldPoll = 
+        (profile.role === 'coach_main' && profile.requestStatus === 'pending') ||
+        (profile.role === 'coach_team' && profile.assignmentStatus === 'pending') ||
+        profile.status === 'pending';
+        
+      if (shouldPoll) {
+        interval = setInterval(() => {
+          console.log('Refrescando perfil...');
+          fetchProfile(user.id);
+        }, 5000); // cada 5 segundos
+      }
     }
     return () => {
       if (interval) clearInterval(interval);

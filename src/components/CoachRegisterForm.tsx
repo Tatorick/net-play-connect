@@ -29,13 +29,9 @@ function strengthLabel(score: number) {
 }
 
 export default function CoachRegisterForm({ onBack }: { onBack?: () => void }) {
-  const [registerType, setRegisterType] = useState<'crear' | 'unirse'>('crear');
-  const [clubCode, setClubCode] = useState("");
-  const [clubCodeValid, setClubCodeValid] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [validatingCode, setValidatingCode] = useState(false);
 
   // Campos controlados para validación
   const [fullName, setFullName] = useState("");
@@ -45,43 +41,13 @@ export default function CoachRegisterForm({ onBack }: { onBack?: () => void }) {
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
 
-  // Validar código de club en Supabase
-  const validateClubCode = async (code: string) => {
-    const { data, error } = await supabase
-      .from("clubs")
-      .select("id")
-      .eq("club_code", code)
-      .single();
-    return !!data && !error;
-  };
-
-  const handleClubCodeBlur = async () => {
-    if (registerType === "unirse" && clubCode) {
-      setValidatingCode(true);
-      setClubCodeValid(null);
-      const isValid = await validateClubCode(clubCode);
-      setClubCodeValid(isValid);
-      setValidatingCode(false);
-    }
-  };
-
-  const handleClubCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setClubCode(e.target.value);
-    setClubCodeValid(null); // Reset validación al cambiar
-  };
-
   // Validaciones inline
   const isFullNameValid = fullName.trim().length >= 3;
   const isEmailValid = validateEmail(email);
   const passwordScore = passwordStrength(password);
   const isPasswordValid = passwordScore >= 4;
 
-  const canSubmit =
-    !loading &&
-    isFullNameValid &&
-    isEmailValid &&
-    isPasswordValid &&
-    (registerType === "crear" || (registerType === "unirse" && clubCodeValid === true));
+  const canSubmit = !loading && isFullNameValid && isEmailValid && isPasswordValid;
 
   const navigate = useNavigate();
 
@@ -108,66 +74,40 @@ export default function CoachRegisterForm({ onBack }: { onBack?: () => void }) {
       const user_id = signUpData.user?.id;
       if (!user_id) throw new Error("No se pudo obtener el ID de usuario");
 
-      if (registerType === "crear") {
-        // 2. Crear club
-        const { data: club, error: clubError } = await supabase
-          .from("clubs")
-          .insert([{ name: club_name, city, province, country, email }])
-          .select()
-          .single();
-        if (clubError) throw clubError;
-        // 3. Actualizar perfil como coach_main
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({ full_name: fullName, role: "coach_main" })
-          .eq("user_id", user_id);
-        if (profileError) throw profileError;
-        // 4. Crear solicitud de aprobación para coach_main
-        const { error: requestError } = await supabase
-          .from("coach_main_requests")
-          .insert([{ user_id, club_id: club.id, status: "pending" }]);
-        if (requestError) throw requestError;
-        // 5. Crear el registro del representante del club
-        const { error: representativeError } = await supabase
-          .from("club_representatives")
-          .insert([{
-            club_id: club.id,
-            user_id: user_id,
-            full_name: fullName,
-            national_id: '', // Se completará luego en la sección Mi Club
-            personal_email: email,
-            phone: '', // Se completará luego
-            role_in_club: 'Entrenador Principal',
-            terms_accepted: false, // Se aceptará luego
-            info_confirmed: false // Se confirmará luego
-          }]);
-        if (representativeError) throw representativeError;
-      } else if (registerType === "unirse") {
-        // 2. Validar código de club
-        const { data: club, error: clubError } = await supabase
-          .from("clubs")
-          .select("id")
-          .eq("club_code", clubCode)
-          .single();
-        if (clubError || !club) throw new Error("Código de club inválido");
-        // 3. Actualizar perfil como coach_team
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({ full_name: fullName, role: "coach_team" })
-          .eq("user_id", user_id);
-        if (profileError) throw profileError;
-        // 4. Crear solicitud en club_coach_assignments
-        const { error: assignError } = await supabase
-          .from("club_coach_assignments")
-          .insert([{ club_id: club.id, coach_user_id: user_id, status: "pending" }]);
-        if (assignError) throw assignError;
-      }
-      setSuccess("¡Registro exitoso! Ahora puedes iniciar sesión.");
+      // Crear club
+      const { data: club, error: clubError } = await supabase
+        .from("clubs")
+        .insert([{ name: club_name, city, province, country, email }])
+        .select()
+        .single();
+      if (clubError) throw clubError;
+      
+      // Crear solicitud de aprobación para coach_main
+      const { error: requestError } = await supabase
+        .from("coach_main_requests")
+        .insert([{ user_id, club_id: club.id, status: "pending" }]);
+      if (requestError) throw requestError;
+      
+      // Crear el registro del representante del club
+      const { error: representativeError } = await supabase
+        .from("club_representatives")
+        .insert([{
+          club_id: club.id,
+          user_id: user_id,
+          full_name: fullName,
+          national_id: '', 
+          personal_email: email,
+          phone: '', 
+          role_in_club: 'Entrenador Principal',
+          terms_accepted: false,
+          info_confirmed: false
+        }]);
+      if (representativeError) throw representativeError;
+
+      setSuccess("¡Registro exitoso! Tu solicitud ha sido enviada para aprobación.");
       setFullName("");
       setEmail("");
       setPassword("");
-      setClubCode("");
-      setClubCodeValid(null);
       setFullNameTouched(false);
       setEmailTouched(false);
       setPasswordTouched(false);
@@ -281,31 +221,16 @@ export default function CoachRegisterForm({ onBack }: { onBack?: () => void }) {
           <div className="text-xs text-red-500 mt-1">La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.</div>
         )}
       </div>
-      <div className="flex gap-4 mt-2">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name="registerType"
-            value="crear"
-            checked={registerType === "crear"}
-            onChange={() => setRegisterType("crear")}
-            className="accent-primary"
-          />
-          Crear un nuevo club
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name="registerType"
-            value="unirse"
-            checked={registerType === "unirse"}
-            onChange={() => setRegisterType("unirse")}
-            className="accent-primary"
-          />
-          Unirse a un club existente
-        </label>
+      <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+        <div className="flex items-center gap-3">
+          <Building2 className="h-5 w-5 text-blue-600" />
+          <div>
+            <div className="font-semibold text-gray-900">Crear Nuevo Club</div>
+            <p className="text-sm text-gray-600">Registro como entrenador principal</p>
+          </div>
+        </div>
       </div>
-      {registerType === "crear" && (
+      <div className="space-y-4">
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-2">
             <Label htmlFor="club_name">Nombre del club</Label>
@@ -364,35 +289,7 @@ export default function CoachRegisterForm({ onBack }: { onBack?: () => void }) {
             </div>
           </div>
         </div>
-      )}
-      {registerType === "unirse" && (
-        <div className="space-y-2">
-          <Label htmlFor="club_code">Código del club</Label>
-          <div className="relative">
-            <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="club_code"
-              name="club_code"
-              type="text"
-              value={clubCode}
-              onChange={handleClubCodeChange}
-              onBlur={handleClubCodeBlur}
-              placeholder="Ej: LEONAS-4D7F23"
-              className="pl-10"
-              required
-            />
-            {validatingCode && (
-              <span className="absolute right-3 top-3 text-xs text-blue-500">Validando...</span>
-            )}
-            {clubCodeValid === false && !validatingCode && (
-              <span className="absolute right-3 top-3 text-xs text-red-500">Código inválido</span>
-            )}
-            {clubCodeValid === true && !validatingCode && (
-              <span className="absolute right-3 top-3 text-xs text-green-600">Código válido</span>
-            )}
-          </div>
-        </div>
-      )}
+      </div>
       {error && <div className="text-sm text-red-500 text-center font-medium mt-2">{error}</div>}
       {success && <div className="text-sm text-green-600 text-center font-medium mt-2">{success}</div>}
       <Button type="submit" className="w-full" size="lg" disabled={!canSubmit}>

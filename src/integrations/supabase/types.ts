@@ -114,6 +114,7 @@ export type Database = {
           address: string | null
           city: string
           club_code: string | null
+          code_regenerated_at: string | null
           country: string
           created_at: string
           email: string
@@ -133,6 +134,7 @@ export type Database = {
           address?: string | null
           city: string
           club_code?: string | null
+          code_regenerated_at?: string | null
           country: string
           created_at?: string
           email: string
@@ -152,6 +154,7 @@ export type Database = {
           address?: string | null
           city?: string
           club_code?: string | null
+          code_regenerated_at?: string | null
           country?: string
           created_at?: string
           email?: string
@@ -166,6 +169,36 @@ export type Database = {
           twitter?: string | null
           updated_at?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      coach_main_request_details: {
+        Row: {
+          additional_info: string | null
+          admin_notes: string | null
+          created_at: string | null
+          id: string
+          rejection_reason: string | null
+          request_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          additional_info?: string | null
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          request_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          additional_info?: string | null
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          request_id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -878,6 +911,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      regenerate_club_code: {
+        Args: { club_id_param: string }
+        Returns: string
+      }
       update_expired_matches: {
         Args: Record<PropertyKey, never>
         Returns: undefined
